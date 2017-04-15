@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Humidity
+{% endblock %}
+
+{% block main %}
+    
+    {% if msg %}
+    
+        <h3>There is no available data</h3>
+    
+    {% else %}
+
+        <form class="form-horizontal">
+            <fieldset>
+                <div class="form-group">
+                    <div class="col-xs-6 col-sm-4 col-lg-2">
+                        <select class="form-control" id="select" name="select">
+                            <option value="datetime('now', 'start of day')">Choose time period:</option>
+                            <option value="datetime('now', 'start of hour')">last hour</option>
+                            <option value="datetime('now', 'start of day')">last day</option>
+                            <option value="datetime('now', 'start of month')">last month</option>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+
+        <div id="chart">
+            {{ barchart | safe }}
+        </div>
+        
+        <!-- http://flask.pocoo.org/docs/0.12/patterns/jquery/ -->
+        <script type=text/javascript>
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        </script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $("#select").change(function(){
+                    $.getJSON($SCRIPT_ROOT + "choosehumid", {
+                        select: $("select").val()
+                    }, function(data) {
+                        $("#chart").html(data);
+                    });
+                    return false;
+                });
+            });
+        </script>
+
+    {% endif %}
+    
+{% endblock %}

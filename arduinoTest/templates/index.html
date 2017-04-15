@@ -1,0 +1,180 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+    {% if status == False %}
+    
+        <h4>Arduino is not connected at this time</h4>
+        <h4>You can check statistics!</h4>
+        <h4><a href="{{ url_for ('tempr') }}">Temperature</a> or <a href="{{ url_for ('humid') }}">Humidity</a></h4>
+        <h2></br></h2>
+        <img src="/static/arduino.png" alt="arduino">
+    
+    {% else %}
+    
+        <h3>Arduino is connected!</h3>
+
+        <!-- https://flask-socketio.readthedocs.io/en/latest/ -->
+        <!-- socketio part help from https://github.com/timmyreilly/Demo-Flask-SocketIO -->
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+
+        <h4 id="tempr"> </h4>
+        <h4 id="humid"> </h4>
+        
+        <div style="width: 70%; margin:0 auto;">
+            <canvas id="chart" ></canvas>
+        </div>
+
+        <!-- http://www.chartjs.org/docs/ -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.js"></script>
+        <script scr="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.bundle.min.js"></script>
+
+        <script type="text/javascript" charset="utf-8">
+            $(document).ready(function(){
+                namespace = '/test';
+
+                var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+                // arrays of data for plotting
+                var temperature = [];
+                var humidity = [];
+                
+                // size of visible data when plotting
+                var size = 50;
+                var times = [];
+                for (var i = 0; i < size; i++)
+                {
+                    times.push(i)
+                }
+                    
+                // draw chart! for details: http://www.chartjs.org/docs/
+                var CHART = document.getElementById("chart");
+                
+                var data = {
+                    labels: times,
+                    datasets: [
+                        {
+                            label: "Temperature",
+                            fill: false,
+                            yAxisID: 'T',
+                            lineTension: 0.2,
+                            backgroundColor: "rgba(238,110,96,1)",
+                            borderColor: "rgba(238,110,96,1)",
+                            borderCapStyle: 'butt',
+                            borderDash: [],
+                            borderDashOffset: 0.0,
+                            borderJoinStyle: 'round',
+                            pointBorderColor: "rgba(238,110,96,1)",
+                            pointBackgroundColor: "#fff",
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: "rgba(238,110,96,1)",
+                            pointHoverBorderColor: "rgba(220,220,220,1)",
+                            pointHoverBorderWidth: 2,
+                            pointRadius: 2,
+                            pointHitRadius: 10,
+                            data: temperature,
+                            spanGaps: false,
+                        },
+                        {
+                            label: "Humidity",
+                            fill: false,
+                            yAxisID: 'H',
+                            lineTension: 0.2,
+                            backgroundColor: "rgba(24,158,223,1)",
+                            borderColor: "rgba(24,158,223,1)",
+                            borderCapStyle: 'butt',
+                            borderDash: [],
+                            borderDashOffset: 0.0,
+                            borderJoinStyle: 'round',
+                            pointBorderColor: "rgba(24,158,223,1)",
+                            pointBackgroundColor: "#fff",
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: "rgba(24,158,223,1)",
+                            pointHoverBorderColor: "rgba(220,220,220,1)",
+                            pointHoverBorderWidth: 2,
+                            pointRadius: 2,
+                            pointHitRadius: 10,
+                            data: humidity,
+                            spanGaps: false,
+                        },]
+                };
+
+                var options = {
+                    scales: {
+                        yAxes: [
+                        {
+                            id: 'T',
+                            type: 'linear',
+                            position: 'left',
+                            scaleLabel: 
+                                {
+                                    display: true,
+                                    labelString: 'Temperature *C'
+                                },
+                            ticks: 
+                            {
+                                max: 40,
+                                min: 10
+                            },
+                            gridLines: 
+                            {
+                                display:false
+                            }
+                        },
+                        {
+                            id: 'H',
+                            position: 'right',
+                            type: 'linear',
+                            scaleLabel: 
+                                {
+                                    display: true,
+                                    labelString: 'Humidity %'
+                                },
+                            ticks: 
+                            {
+                                max: 100,
+                                min: 10
+                            },
+                            gridLines: 
+                            {
+                                display:false
+                            }
+                        }]
+                    }     
+                };
+
+                var chart = new Chart(CHART, {
+                    type: 'line',
+                    data: data,
+                    options: options
+                });
+
+                socket.on('message', function(msg){
+
+                    // discard old data to plot
+                    if ((temperature.length >= size) || (humidity.length >= size))
+                    {
+                        temperature.shift();
+                        humidity.shift();
+                    }
+                    
+                    temperature.push(msg.tempr);
+                    humidity.push(msg.humid);
+                    
+                    chart.update();
+
+                    // show current values of temperature and humidity
+                    $('#tempr').html('Temperature now is: ' + msg.tempr + ' *C');
+                    $('#humid').html('Humidity now is: '+ msg.humid + ' %');
+
+                });
+            });
+        </script>
+
+    {% endif %}
+{% endblock %}

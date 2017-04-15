@@ -1,0 +1,46 @@
+<!-- cs50x template for pset8 Mashup -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+
+        <meta content="initial-scale=1, width=device-width" name="viewport"/>
+
+        <!-- documentation at http://getbootstrap.com/, alternative themes at https://www.bootstrapcdn.com/bootswatch/ -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" integrity="sha384-h21C2fcDk/eFsW9sC9h0dhokq5pDinLNklTKoxIZRUn3+hvmgQSffLLQ4G4l2eEr" crossorigin="anonymous">
+
+        <!-- http://jquery.com/ -->
+        <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+
+        <!-- http://getbootstrap.com/ -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+    
+    <body>
+        <!-- fill viewport -->
+        <div class="container">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="{{ url_for ('index') }}">Arduino DHT-11 Live!</a>
+                    </div>
+                    <div class="collapse navbar-collapse" id="navbar">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href="{{ url_for ('tempr') }}">Temperature</a></li>
+                            <li><a href="{{ url_for ('humid') }}">Humidity</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="text-center">
+                <h2>Drop it like it's hot!</h2>
+                <h5>---------------------</h5>
+                <main>
+                    {% block main %}{% endblock %}
+                </main>
+            </div>
+        </div>
+    </body>
+</html>

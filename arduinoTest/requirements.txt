@@ -1,0 +1,6 @@
+Flask
+Flask-SocketIO
+Flask-SQLAlchemy
+pyserial
+gevent
+plotly
