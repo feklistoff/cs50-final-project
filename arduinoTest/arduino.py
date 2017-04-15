@@ -144,9 +144,7 @@ def humid():
 
 @app.route("/choosetemp")
 def choosetemp():
-
     q = request.args.get("select", "day", type=str)
-
     rows = db.session.execute("SELECT temperature, timestamp FROM data"
                                   " WHERE timestamp BETWEEN {}"
                                   " AND datetime('now', 'localtime')". format(q))
@@ -163,15 +161,12 @@ def choosetemp():
         return jsonify("<h3>There is no available data!</h3><h3>Choose something else</h3>")
 
     barchart = bar(timestamp, temperature, key)
-
     return jsonify(barchart)
 
 
 @app.route("/choosehumid")
 def choosehumid():
-
     q = request.args.get("select", "day", type=str)
-
     rows = db.session.execute("SELECT humidity, timestamp FROM data"
                                   " WHERE timestamp BETWEEN {}"
                                   " AND datetime('now', 'localtime')". format(q))
@@ -188,7 +183,6 @@ def choosehumid():
         return jsonify("<h3>There is no available data!</h3><h3>Choose something else</h3>")
 
     barchart = bar(timestamp, humidity, key)
-
     return jsonify(barchart)
 
 
