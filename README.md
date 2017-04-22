@@ -2,6 +2,7 @@
 Arduino Uno + DHT-11 sensor simple web app
 ## What's Inside
 A simple web application I made for CS50x final project.
+Short video presentation on youtube: https://youtu.be/G43t58qDj_U
 It takes Arduino Uno clone (with CH340 chip on board) and DHT-11 temperature/humidity sensor.
 Application connects Arduino to python Flask app and sqlite3 database.
 There are two main functions of the app: 1 - plot real-time data using charts.js when Arduino is connected;
